@@ -1,0 +1,77 @@
+@model IEnumerable<Day3.Models.Product>
+
+@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+    // Lấy thông tin tìm kiếm và phân trang từ Controller truyền sang
+    var search = ViewBag.Search as Day3.Models.ProductSearchModel ?? new Day3.Models.ProductSearchModel();
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+}
+
+<h1>Danh sách sản phẩm</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Thêm mới</a>
+</p>
+
+<!-- 1. FORM TÌM KIẾM (Gửi bằng GET lên URL) -->
+<form method="get" asp-controller="Product" asp-action="Index" class="mb-3">
+    <div class="input-group" style="max-width: 400px;">
+        <input type="text" name="Keyword" value="@search.Keyword" class="form-control" placeholder="Nhập tên sản phẩm..." />
+        <button type="submit" class="btn btn-outline-secondary">Tìm kiếm</button>
+    </div>
+</form>
+
+<!-- 2. BẢNG HIỂN THỊ DỮ LIỆU -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên sản phẩm</th>
+            <th>Giá</th>
+            <th>Mô tả</th>
+            <th>CategoryId</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td>@item.Price</td>
+                <td>@item.Description</td>
+                <td>@item.CategoryId</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- 3. THANH PHÂN TRANG -->
+@if (totalPages > 1)
+{
+    <div>
+        Trang:
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            if (i == currentPage)
+            {
+                <strong class="mx-1">@i</strong>
+            }
+            else
+            {
+                <a class="mx-1"
+                   asp-controller="Product"
+                   asp-action="Index"
+                   asp-route-page="@i"
+                   asp-route-keyword="@search.Keyword">@i</a>
+            }
+        }
+    </div>
+}
